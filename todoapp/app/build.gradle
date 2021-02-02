@@ -5,6 +5,10 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
 
+    packagingOptions {
+        pickFirst 'protobuf.meta'
+    }
+
     defaultConfig {
         applicationId "com.example.todoapp"
         minSdkVersion 16

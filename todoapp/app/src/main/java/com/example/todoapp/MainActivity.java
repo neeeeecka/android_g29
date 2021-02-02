@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         listview.setAdapter(new ListElementAdapter(this, data));
 
         Map<String, Object> docData = new HashMap<>();
-        docData.put("name", "Los Angeles");
+        docData.put("test", "dataaaaaaaaaaa");
         // Add a new document (asynchronously) in collection "cities" with id "LA"
         ApiFuture<WriteResult> future = (ApiFuture<WriteResult>) db.collection("todo").document("black").set(docData);
 
