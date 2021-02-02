@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
     List<String> data = new ArrayList<String>();
 
+    String uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,9 +88,40 @@ public class MainActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        String uid = currentUser.getUid();
+        uid = currentUser.getUid();
 
-        DocumentReference docRef = db.collection("todo").document("black");
+
+        DocumentReference docRef = db.collection("todo").document(uid);
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                    } else {
+                        Map<String, Object> dataMap = new HashMap<>();
+
+                        db.collection("todo").document(uid)
+                                .set(dataMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error writing document", e);
+                                    }
+                                });
+                    }
+                } else {
+                    Log.d(TAG, "Failed with: ", task.getException());
+                }
+            }
+        });
 
         final Context context = this;
 
@@ -155,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
 //                        Log.w(TAG, "Error adding document", e);
 //                    }
 //                });
-        db.collection("todo").document("black").set(dataMap);
+        db.collection("todo").document(uid).set(dataMap);
     }
 
 
