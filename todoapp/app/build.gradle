@@ -48,7 +48,7 @@ dependencies {
 
     implementation 'androidx.multidex:multidex:2.0.1'
 
-    implementation 'com.google.cloud:google-cloud-firestore:1.32.0'
+
 
 
 }
