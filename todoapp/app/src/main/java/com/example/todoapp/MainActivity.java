@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -82,74 +83,73 @@ public class MainActivity extends AppCompatActivity {
 
         if(currentUser == null) {
             startActivity(loginIntent);
-        }else{
+        }else {
             userName.setText("Logged as: " + currentUser.getDisplayName());
-        }
-
-        db = FirebaseFirestore.getInstance();
-
-        uid = currentUser.getUid();
 
 
-        DocumentReference docRef = db.collection("todo").document(uid);
+            db = FirebaseFirestore.getInstance();
 
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
+            uid = currentUser.getUid();
+
+            DocumentReference docRef = db.collection("todo").document(uid);
+
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                        } else {
+                            Map<String, Object> dataMap = new HashMap<>();
+
+                            db.collection("todo").document(uid)
+                                    .set(dataMap)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "DocumentSnapshot successfully written!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(TAG, "Error writing document", e);
+                                        }
+                                    });
+                        }
                     } else {
-                        Map<String, Object> dataMap = new HashMap<>();
-
-                        db.collection("todo").document(uid)
-                                .set(dataMap)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d(TAG, "DocumentSnapshot successfully written!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w(TAG, "Error writing document", e);
-                                    }
-                                });
+                        Log.d(TAG, "Failed with: ", task.getException());
                     }
-                } else {
-                    Log.d(TAG, "Failed with: ", task.getException());
                 }
-            }
-        });
+            });
 
-        final Context context = this;
+            final Context context = this;
 
-        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot snapshot,
-                                @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
+            docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                    @Nullable FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.w(TAG, "Listen failed.", e);
+                        return;
+                    }
 
-                if (snapshot != null && snapshot.exists()) {
-                    data.clear();
-                    Log.d(TAG, "Current data: " + snapshot.getData());
-                    for (Object value : snapshot.getData().values()) {
+                    if (snapshot != null && snapshot.exists()) {
+                        data.clear();
+                        Log.d(TAG, "Current data: " + snapshot.getData());
+                        for (Object value : snapshot.getData().values()) {
 //                        Log.d(TAG, "Current data: " + value);
-                        data.add(value + "");
+                            data.add(value + "");
+                        }
+                        String[] buffer = new String[data.size()];
+                        listview.setAdapter(new ListElementAdapter(context, data.toArray(buffer)));
+
+                    } else {
+                        Log.d(TAG, "Current data: null");
                     }
-                    String[] buffer = new String[ data.size() ];
-                    listview.setAdapter(new ListElementAdapter(context, data.toArray(buffer)));
-
-                } else {
-                    Log.d(TAG, "Current data: null");
                 }
-            }
-        });
-
+            });
+        }
     }
 
 //    public T myMethod(Callable<T> func) {
@@ -158,6 +158,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void onLogOut(View view){
         FirebaseAuth.getInstance().signOut();
+
+
         startActivity(loginIntent);
     }
 
