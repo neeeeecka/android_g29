@@ -22,11 +22,20 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.api.core.ApiFuture;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firestore.v1.WriteResult;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 //import
 
@@ -39,8 +48,12 @@ public class MainActivity extends AppCompatActivity {
     private Button logout;
     private EditText todoTextbox;
     private Button add;
+    private ListView listview;
 
     Intent loginIntent;
+    FirebaseFirestore db;
+
+    String[] data = new String[]{};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         logout = findViewById(R.id.logout);
         todoTextbox = findViewById(R.id.todoTextbox);
         add = findViewById(R.id.add);
+        listview = findViewById(R.id.listView);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -62,11 +76,18 @@ public class MainActivity extends AppCompatActivity {
             userName.setText("Logged as: " + currentUser.getDisplayName());
         }
 
-        ListView  listview = (ListView) findViewById(R.id.listView);
-        listview.setAdapter(new ListElementAdapter(this, new String[] { "data1",
-                "data2" }));
+        db = FirebaseFirestore.getInstance();
+
+        String uid = currentUser.getUid();
+
+        DocumentReference docRef = db.collection("todo").document("black");
+        listview.setAdapter(new ListElementAdapter(this, data));
 
     }
+
+//    public T myMethod(Callable<T> func) {
+//        return func.call();
+//    }
 
     public void onLogOut(View view){
         FirebaseAuth.getInstance().signOut();
@@ -74,6 +95,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onAdd(View view){
+        String[] data = new String[]{ "data1",
+                "data", "data3" };
+        listview.setAdapter(new ListElementAdapter(this, data));
+
+        Map<String, Object> docData = new HashMap<>();
+        docData.put("name", "Los Angeles");
+        // Add a new document (asynchronously) in collection "cities" with id "LA"
+        ApiFuture<WriteResult> future = (ApiFuture<WriteResult>) db.collection("todo").document("black").set(docData);
 
     }
 
