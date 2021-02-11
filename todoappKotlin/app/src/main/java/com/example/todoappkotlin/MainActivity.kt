@@ -8,13 +8,12 @@ import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-
-
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -48,11 +47,16 @@ class MainActivity : AppCompatActivity() {
         listview = findViewById(R.id.listView);
 
         mAuth = FirebaseAuth.getInstance()
+
         val currentUser = mAuth.currentUser
+
         loginIntent = Intent(this, LoginActivity::class.java)
 
         if(currentUser == null) {
             startActivity(loginIntent);
+        }else{
+            userName.text = "Logged as: " + currentUser.displayName
+
         }
 
     }
@@ -60,6 +64,16 @@ class MainActivity : AppCompatActivity() {
 
     }
     fun onLogOut(view: View){
+        mAuth.signOut();
 
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+
+        val client = GoogleSignIn.getClient(this, gso);
+        client.signOut()
+
+        startActivity(loginIntent);
     }
 }
