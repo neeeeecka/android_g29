@@ -12,9 +12,13 @@ import com.google.android.gms.common.SignInButton
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var UID : String
 
     private lateinit var auth: FirebaseAuth
     private var TAG = "MainActivity"
@@ -32,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     private var data: List<String> = ArrayList()
 
-    private var DATA = listOf<String>()
+    private var DATA = mutableListOf<String>()
 
     private lateinit var ADAPTER : RowAdapter
 
@@ -47,7 +51,10 @@ class MainActivity : AppCompatActivity() {
         add = findViewById(R.id.add);
         listview = findViewById(R.id.listView);
 
+        setupTexts()
+
         mAuth = FirebaseAuth.getInstance()
+        db = Firebase.firestore
 
         val currentUser = mAuth.currentUser
 
@@ -56,28 +63,71 @@ class MainActivity : AppCompatActivity() {
         if(currentUser == null) {
             startActivity(loginIntent);
         }else{
-            userName.text = "Logged as: " + currentUser.displayName
-            DATA = listOf<String>(
-                "test",
-                "test2",
-                "test3"
-            )
+            UID = currentUser.uid
+
+//            Log.d(TAG, getString(R.string.logged_as_prefix))
+            userName.text = getString(R.string.logged_as_prefix) + " " + currentUser.displayName
+
             ADAPTER = RowAdapter(this, DATA, ::onDelete)
             listview.adapter = ADAPTER
+
+            val docRef = db.collection("todo").document(UID)
+
+            docRef.addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e)
+                    return@addSnapshotListener
+                }
+
+                val source = if (snapshot != null && snapshot.metadata.hasPendingWrites())
+                    "Local"
+                else
+                    "Server"
+
+                if (snapshot != null && snapshot.exists()) {
+                    Log.d(TAG, "$source data: ${snapshot.data}")
+                    DATA.clear()
+                    snapshot.data!!.forEach { (key, value) -> DATA.add(value.toString()) }
+                    ADAPTER.notifyDataSetChanged()
+                } else {
+                    Log.d(TAG, "$source data: null")
+                }
+            }
 
         }
 
     }
 
-    fun onDelete(position : Int) : Int {
+    private fun onDelete(position : Int) : Int {
         Log.d(TAG, position.toString())
+        DATA.removeAt(position)
+        updateListViewAndFirestore()
         return position
     }
 
     fun onAdd(view: View){
+        if(todoTextbox.text.isNotEmpty()) {
+            DATA.add(todoTextbox.text.toString())
+            updateListViewAndFirestore()
 
-        ADAPTER.notifyDataSetChanged()
+            todoTextbox.setText("")
+        }else{
+            Toast.makeText(this, "Text can't be empty", Toast.LENGTH_LONG).show()
+        }
     }
+
+    private fun updateListViewAndFirestore(){
+        val map = mutableMapOf<String, String>()
+
+        var i : Int = 0
+        for (row in DATA){
+            map[i.toString()] = DATA[i]
+            i++
+        }
+
+        db.collection("todo").document(UID).set(map);
+    }
+
     fun onLogOut(view: View){
         mAuth.signOut();
 
@@ -90,5 +140,12 @@ class MainActivity : AppCompatActivity() {
         client.signOut()
 
         startActivity(loginIntent);
+    }
+
+    fun setupTexts(){
+        add.setText(R.string.add_button)
+        logout.setText(R.string.logout_button)
+        todoTextbox.setHint(R.string.editText_hint)
+
     }
 }
