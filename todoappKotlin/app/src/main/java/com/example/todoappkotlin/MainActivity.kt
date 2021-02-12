@@ -3,6 +3,9 @@ package com.example.todoappkotlin
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -26,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mAuth: FirebaseAuth
 
     private lateinit var userName: TextView
-    private lateinit var logout: Button
+//    private lateinit var logout: Button
     private lateinit var todoTextbox: EditText
     private lateinit var add: Button
     private lateinit var listview: ListView
@@ -40,18 +43,16 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var ADAPTER : RowAdapter
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        supportActionBar?.hide()
+//        supportActionBar?.hide()
 
-        userName = findViewById(R.id.userName);
-        logout = findViewById(R.id.logout);
         todoTextbox = findViewById(R.id.todoTextbox);
         add = findViewById(R.id.add);
         listview = findViewById(R.id.listView);
 
-        setupTexts()
 
         mAuth = FirebaseAuth.getInstance()
         db = Firebase.firestore
@@ -66,7 +67,10 @@ class MainActivity : AppCompatActivity() {
             UID = currentUser.uid
 
 //            Log.d(TAG, getString(R.string.logged_as_prefix))
-            userName.text = getString(R.string.logged_as_prefix) + " " + currentUser.displayName
+//            userName.text = getString(R.string.logged_as_prefix) + " " + currentUser.displayName
+
+//            actionBar?.title = currentUser.displayName
+            title = currentUser.displayName + "'s todo list"
 
             ADAPTER = RowAdapter(this, DATA, ::onDelete)
             listview.adapter = ADAPTER
@@ -128,7 +132,7 @@ class MainActivity : AppCompatActivity() {
         db.collection("todo").document(UID).set(map);
     }
 
-    fun onLogOut(view: View){
+    fun onLogOut(){
         mAuth.signOut();
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -142,10 +146,18 @@ class MainActivity : AppCompatActivity() {
         startActivity(loginIntent);
     }
 
-    fun setupTexts(){
-        add.setText(R.string.add_button)
-        logout.setText(R.string.logout_button)
-        todoTextbox.setHint(R.string.editText_hint)
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId){
+            R.id.menu_logout -> onLogOut()
+//            R.id.menu_profile ->
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }

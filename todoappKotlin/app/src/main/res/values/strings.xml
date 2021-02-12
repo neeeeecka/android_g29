@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">todoappKotlin</string>
     <string name="add_button">ADD</string>
-    <string name="logout_button">LOG OUT</string>
+    <string name="logout_button">Log out</string>
     <string name="editText_hint">What to do?</string>
     <string name="logged_as_prefix">Logged as: </string>
 
