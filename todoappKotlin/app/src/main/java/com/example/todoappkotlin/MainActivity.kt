@@ -2,11 +2,9 @@ package com.example.todoappkotlin
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ListView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -22,7 +20,6 @@ class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"
     private lateinit var signInButton: SignInButton
     private lateinit var mAuth: FirebaseAuth
-//    private lateinit var currentUser: FirebaseUser
 
     private lateinit var userName: TextView
     private lateinit var logout: Button
@@ -56,10 +53,23 @@ class MainActivity : AppCompatActivity() {
             startActivity(loginIntent);
         }else{
             userName.text = "Logged as: " + currentUser.displayName
+            val data = arrayOf<String>(
+                "test",
+                "test2",
+                "test3"
+            )
+            val adapter = RowAdapter(this, data, ::onDelete)
+            listview.adapter = adapter
 
         }
 
     }
+
+    fun onDelete(position : Int) : Int {
+        Log.d(TAG, position.toString())
+        return position
+    }
+
     fun onAdd(view: View){
 
     }
