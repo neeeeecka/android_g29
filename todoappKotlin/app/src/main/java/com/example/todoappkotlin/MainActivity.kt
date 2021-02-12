@@ -23,12 +23,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var UID : String
 
-    private lateinit var auth: FirebaseAuth
     private var TAG = "MainActivity"
     private lateinit var signInButton: SignInButton
     private lateinit var mAuth: FirebaseAuth
 
-    private lateinit var userName: TextView
 //    private lateinit var logout: Button
     private lateinit var todoTextbox: EditText
     private lateinit var add: Button
@@ -36,8 +34,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var loginIntent: Intent
 
     private lateinit var db: FirebaseFirestore
-
-    private var data: List<String> = ArrayList()
 
     private var DATA = mutableListOf<String>()
 
@@ -155,9 +151,12 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId){
             R.id.menu_logout -> onLogOut()
-//            R.id.menu_profile ->
+            R.id.menu_profile -> openProfile()
         }
-
         return super.onOptionsItemSelected(item)
+    }
+
+    fun openProfile(){
+        startActivity(Intent(this, ProfileActivity::class.java))
     }
 }

@@ -4,5 +4,12 @@
     <string name="logout_button">Log out</string>
     <string name="editText_hint">What to do?</string>
     <string name="logged_as_prefix">Logged as: </string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="save_button">Save</string>
+
+    <string name="label_age">Age:</string>
+    <string name="label_name">Name:</string>
+
 
 </resources>
