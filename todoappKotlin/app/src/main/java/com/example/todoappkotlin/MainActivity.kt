@@ -4,19 +4,23 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ListView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.concurrent.fixedRateTimer
 
 
 class MainActivity : AppCompatActivity() {
@@ -56,8 +60,10 @@ class MainActivity : AppCompatActivity() {
         val currentUser = mAuth.currentUser
 
         loginIntent = Intent(this, LoginActivity::class.java)
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         if(currentUser == null) {
+            finish()
             startActivity(loginIntent);
         }else{
             UID = currentUser.uid
@@ -129,6 +135,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onLogOut(){
+        UID = ""
         mAuth.signOut();
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -138,7 +145,9 @@ class MainActivity : AppCompatActivity() {
 
         val client = GoogleSignIn.getClient(this, gso);
         client.signOut()
-
+        
+        finish()
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(loginIntent);
     }
 
