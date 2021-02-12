@@ -32,6 +32,10 @@ class MainActivity : AppCompatActivity() {
 
     private var data: List<String> = ArrayList()
 
+    private var DATA = listOf<String>()
+
+    private lateinit var ADAPTER : RowAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -53,13 +57,13 @@ class MainActivity : AppCompatActivity() {
             startActivity(loginIntent);
         }else{
             userName.text = "Logged as: " + currentUser.displayName
-            val data = arrayOf<String>(
+            DATA = listOf<String>(
                 "test",
                 "test2",
                 "test3"
             )
-            val adapter = RowAdapter(this, data, ::onDelete)
-            listview.adapter = adapter
+            ADAPTER = RowAdapter(this, DATA, ::onDelete)
+            listview.adapter = ADAPTER
 
         }
 
@@ -72,6 +76,7 @@ class MainActivity : AppCompatActivity() {
 
     fun onAdd(view: View){
 
+        ADAPTER.notifyDataSetChanged()
     }
     fun onLogOut(view: View){
         mAuth.signOut();

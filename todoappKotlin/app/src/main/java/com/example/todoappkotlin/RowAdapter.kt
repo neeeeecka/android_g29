@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import android.widget.*
 
 
-class RowAdapter(private val context: Activity, private val title: Array<String>, delCallback: (p: Int) -> Int)
-    : ArrayAdapter<String>(context, R.layout.row, title) {
+class RowAdapter(private val context: Activity, private val titles: List<String>, delCallback: (p: Int) -> Int)
+    : ArrayAdapter<String>(context, R.layout.row, titles) {
 
     private var delCallback: (p: Int) -> Int = delCallback
 
@@ -19,7 +19,7 @@ class RowAdapter(private val context: Activity, private val title: Array<String>
 
         val titleText = rowView.findViewById(R.id.title) as TextView
 
-        titleText.text = title[position]
+        titleText.text = titles[position]
 
         val button = rowView.findViewById(R.id.delete) as Button
 
