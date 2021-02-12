@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 
+//CODE WRITTEN BY NIKOLOZ GABISONIA
 
 class RowAdapter(private val context: Activity, private val titles: MutableList<String>, delCallback: (p: Int) -> Int)
     : ArrayAdapter<String>(context, R.layout.row, titles) {

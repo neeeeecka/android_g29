@@ -14,6 +14,8 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_profile2.*
 
+//CODE WRITTEN BY NIKOLOZ GABISONIA
+
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var UID : String
@@ -78,6 +80,5 @@ class ProfileActivity : AppCompatActivity() {
         Log.d(TAG, map.toString())
         db.collection("users").document(UID).set(map);
         Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show()
-
     }
 }

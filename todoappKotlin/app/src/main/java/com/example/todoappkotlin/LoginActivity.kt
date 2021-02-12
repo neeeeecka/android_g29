@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 
+//CODE WRITTEN BY NIKOLOZ GABISONIA
 
 class LoginActivity : AppCompatActivity() {
 

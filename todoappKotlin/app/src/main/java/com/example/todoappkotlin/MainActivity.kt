@@ -23,6 +23,8 @@ import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
 
+//CODE WRITTEN BY NIKOLOZ GABISONIA
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var UID : String
@@ -145,7 +147,7 @@ class MainActivity : AppCompatActivity() {
 
         val client = GoogleSignIn.getClient(this, gso);
         client.signOut()
-        
+
         finish()
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(loginIntent);
